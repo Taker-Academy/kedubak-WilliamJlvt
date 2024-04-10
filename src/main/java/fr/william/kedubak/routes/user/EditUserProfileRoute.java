@@ -9,6 +9,7 @@ import fr.william.kedubak.response.SuccessResponse;
 import io.javalin.http.Context;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.mindrot.jbcrypt.BCrypt;
 
 import static com.mongodb.client.model.Updates.*;
@@ -49,18 +50,13 @@ public class EditUserProfileRoute implements KedubakRoute {
                 set("password", BCrypt.hashpw(user.password, BCrypt.gensalt()))
         );
 
-        MongoDBConnection.getDatabase().getCollection(USERS_COLLECTION).updateOne(new Document("_id", userId), update);
-
-        Document foundUser = MongoDBConnection.getDatabase().getCollection(USERS_COLLECTION).find(new Document("_id", userId)).first();
-        if (foundUser == null) {
-            ctx.status(404).json(new ErrorResponse("User not found"));
-            return;
-        }
+        Document query = new Document("_id", new ObjectId(userId));
+        MongoDBConnection.getDatabase().getCollection(USERS_COLLECTION).updateOne(query, update);
 
         Document result = new Document()
-                .append("email", foundUser.getString("email"))
-                .append("firstName", foundUser.getString("firstName"))
-                .append("lastName", foundUser.getString("lastName"));
+                .append("email", user.email)
+                .append("firstName", user.firstName)
+                .append("lastName", user.lastName);
 
         ctx.status(200).json(new SuccessResponse(result));
     }

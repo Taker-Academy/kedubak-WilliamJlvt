@@ -49,7 +49,8 @@ public class CreatePostRoute implements KedubakRoute {
         MongoDatabase database = MongoDBConnection.getDatabase();
         MongoCollection<Document> collection = database.getCollection(POSTS_COLLECTION);
         collection.insertOne(post.toDocument());
-
-        ctx.status(201).json(new SuccessResponse(post.toDocument()));
+        // set post id to the last inserted post id in the collection
+        post.set_id(collection.find().sort(new Document("createdAt", -1)).first().getObjectId("_id").toString());
+        ctx.status(201).json(new SuccessResponse(post.toDocumentWithId()));
     }
 }

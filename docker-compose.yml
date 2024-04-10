@@ -6,9 +6,8 @@ services:
     restart: on-failure
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: 'yolo'
-      MONGO_INITDB_ROOT_PASSWORD: 'very_strong_password'
+    env_file:
+      - .env
     volumes:
       - ./mongo_data:/data/db
 
@@ -17,8 +16,7 @@ services:
     restart: on-failure
     ports:
       - "8080:8080"
-    environment:
-      MONGO_DATABASE: 'admin'
-      MONGO_CONNECTION_STRING: 'mongodb://yolo:very_strong_password@mongodb:27017/admin'
+    env_file:
+      - .env
     depends_on:
       - mongodb

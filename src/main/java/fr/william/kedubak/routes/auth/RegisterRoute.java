@@ -13,7 +13,7 @@ import org.bson.Document;
 public class RegisterRoute implements KedubakRoute {
 
     private static final String USERS_COLLECTION = "users";
-    private static final String SALT_ROUNDS = "$2a$10$wSY0nwzrNYPNXz1bwV6Yy.";
+    private static final String SALT_ROUNDS = System.getenv("SALT_ROUNDS");
 
     class User {
         String email;

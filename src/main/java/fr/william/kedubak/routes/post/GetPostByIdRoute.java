@@ -14,20 +14,26 @@ public class GetPostByIdRoute implements KedubakRoute {
 
     private static final String POSTS_COLLECTION = "posts";
 
+    public static Document getPostById(String postId) {
+        for (Document doc : MongoDBConnection.getDatabase().getCollection(POSTS_COLLECTION).find()) {
+            if (doc.getObjectId("_id").toString().equals(postId)) {
+                return doc;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void handle(Context ctx) {
         String id = ctx.pathParam("id");
-
-        MongoDatabase database = MongoDBConnection.getDatabase();
-        MongoCollection<Document> collection = database.getCollection(POSTS_COLLECTION);
-
-        Document post = collection.find(new Document("_id", new ObjectId(id))).first();
+        Document post = getPostById(id);
 
         if (post == null) {
             ctx.status(404).json(new ErrorResponse("Post not found"));
             return;
         }
 
+        post.append("_id", post.getObjectId("_id").toString());
         ctx.status(200).json(new SuccessResponse(post));
     }
 }

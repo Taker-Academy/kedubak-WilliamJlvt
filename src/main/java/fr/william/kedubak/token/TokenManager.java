@@ -8,7 +8,7 @@ import java.util.Map;
 public class TokenManager {
 
     private final static Map<String, String> tokens = new HashMap<>();
-    private static final String SALT_ROUNDS = "$2a$10$wSY0nwzrNYPNXz1bwV6Yy.";
+    private static final String SALT_ROUNDS = System.getenv("SALT_ROUNDS");
 
     public static String generateToken(String userId) {
         String token = BCrypt.hashpw(userId, SALT_ROUNDS);

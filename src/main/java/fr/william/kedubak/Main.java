@@ -1,5 +1,6 @@
 package fr.william.kedubak;
 
+import com.google.gson.GsonBuilder;
 import fr.william.kedubak.database.MongoDBConnection;
 import fr.william.kedubak.token.TokenManager;
 import io.javalin.Javalin;

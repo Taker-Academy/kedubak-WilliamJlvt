@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Post {
 
+    private String _id;
     private final long createdAt;
     private final String userId;
     private final String firstName;
@@ -29,7 +30,8 @@ public class Post {
         this.upVotes = new ArrayList<>();
     }
 
-    public Post(long createdAt, String userId, String firstName, String title, String content, List<Comment> comments, List<String> upVotes) {
+    public Post(String _id, long createdAt, String userId, String firstName, String title, String content, List<Comment> comments, List<String> upVotes) {
+        this._id = _id;
         this.createdAt = createdAt;
         this.userId = userId;
         this.firstName = firstName;
@@ -67,15 +69,23 @@ public class Post {
         return upVotes;
     }
 
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
+
     public void editPost(String newTitle, String newContent) {
         this.title = newTitle;
         this.content = newContent;
     }
 
-    Document toDocument() {
-        JSONArray commentsArray = new JSONArray();
+    public Document toDocument() {
+        List<Document> commentsList = new ArrayList<>();
         for (Comment comment : comments) {
-            commentsArray.put(comment.toDocument());
+            commentsList.add(comment.toDocument());
         }
 
         return new Document()
@@ -84,24 +94,28 @@ public class Post {
                 .append("firstName", firstName)
                 .append("title", title)
                 .append("content", content)
-                .append("comments", commentsArray)
+                .append("comments", commentsList)
                 .append("upVotes", upVotes);
     }
 
-    static Post fromDocument(Document document) {
-        Document[] commentsDocuments = (Document[]) document.get("comments");
-        Comment[] comments = new Comment[commentsDocuments.length];
-        for (int i = 0; i < commentsDocuments.length; i++) {
-            comments[i] = Comment.fromDocument(commentsDocuments[i]);
+    public Document toDocumentWithId() {
+        return toDocument().append("_id", _id);
+    }
+
+    public static Post fromDocument(Document document) {
+        List<Comment> comments = new ArrayList<>();
+        for (Document commentDocument : document.getList("comments", Document.class)) {
+            comments.add(Comment.fromDocument(commentDocument));
         }
 
         return new Post(
+                document.getObjectId("_id").toString(),
                 document.getLong("createdAt"),
                 document.getString("userId"),
                 document.getString("firstName"),
                 document.getString("title"),
                 document.getString("content"),
-                List.of(comments),
+                comments,
                 document.getList("upVotes", String.class)
         );
     }

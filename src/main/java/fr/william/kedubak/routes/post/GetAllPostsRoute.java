@@ -1,6 +1,7 @@
 package fr.william.kedubak.routes.post;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import fr.william.kedubak.KedubakRoute;
 import fr.william.kedubak.token.TokenManager;
 import fr.william.kedubak.database.MongoDBConnection;
@@ -38,7 +39,9 @@ public class GetAllPostsRoute implements KedubakRoute {
         List<Document> posts = new ArrayList<>();
         try {
             while (cursor.hasNext()) {
-                posts.add(cursor.next());
+                Document post = cursor.next();
+                post.append("_id", post.getObjectId("_id").toString());
+                posts.add(post);
             }
         } finally {
             cursor.close();

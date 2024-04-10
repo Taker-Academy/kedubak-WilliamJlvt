@@ -8,6 +8,7 @@ import fr.william.kedubak.response.ErrorResponse;
 import fr.william.kedubak.response.SuccessResponse;
 import io.javalin.http.Context;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public class RemoveUserRoute implements KedubakRoute {
 
@@ -29,7 +30,7 @@ public class RemoveUserRoute implements KedubakRoute {
             return;
         }
 
-        Document query = new Document("_id", userId);
+        Document query = new Document("_id", new ObjectId(userId));
         Document foundUser = MongoDBConnection.getDatabase().getCollection(USERS_COLLECTION).findOneAndDelete(query);
 
         if (foundUser == null) {

@@ -32,7 +32,7 @@ public class Comment {
         return content;
     }
 
-    Document toDocument() {
+    public Document toDocument() {
         return new Document()
                 .append("createdAt", createdAt)
                 .append("id", id)
